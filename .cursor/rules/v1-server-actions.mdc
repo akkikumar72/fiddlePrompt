@@ -1,0 +1,132 @@
+---
+description: Server Actions, authentication, and validation patterns for V1
+alwaysApply: true
+---
+
+# V1 Server Actions & Authentication
+
+Follow these patterns for Server Actions and authentication used in the V1 codebase.
+
+## 🔐 **Safe Action Pattern**
+
+All Server Actions use [next-safe-action](https://next-safe-action.dev) for validation. Reference: [apps/app/src/actions/safe-action.ts](mdc:apps/app/src/actions/safe-action.ts)
+
+```typescript
+import { z } from "zod";
+import { authActionClient } from "../safe-action";
+
+// 1. Define schema
+const updatePostSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1),
+  content: z.string(),
+});
+
+// 2. Create action with metadata
+export const updatePostAction = authActionClient
+  .schema(updatePostSchema)
+  .metadata({
+    name: "update-post",
+    track: {
+      event: "Post Updated",
+      channel: "dashboard",
+    },
+  })
+  .action(async ({ parsedInput, ctx }) => {
+    const { id, title, content } = parsedInput;
+    const { user, supabase } = ctx;
+
+    // Early validation
+    if (!user) {
+      throw new Error("Unauthorized");
+    }
+
+    // Database operation
+    const { data, error } = await supabase
+      .from("posts")
+      .update({ title, content })
+      .eq("id", id)
+      .eq("user_id", user.id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error("Failed to update post");
+    }
+
+    return { post: data };
+  });
+```
+
+## 🏗️ **Action Clients**
+
+Use the appropriate client based on authentication needs:
+
+- **`actionClient`** - Basic actions without auth
+- **`authActionClient`** - Authenticated actions with:
+  - Rate limiting via `@v1/kv/ratelimit`
+  - User context from Supabase auth
+  - Analytics tracking via `@v1/analytics`
+  - Sentry error monitoring
+
+## 📁 **File Organization**
+
+Store actions in [apps/app/src/actions](mdc:apps/app/src/actions):
+
+```
+actions/
+├── safe-action.ts          # Action clients setup
+├── post/
+│   ├── schema.ts          # Zod schemas
+│   └── update-action.ts   # Action implementation
+└── user/
+    ├── schema.ts
+    └── profile-action.ts
+```
+
+## 🔍 **Error Handling**
+
+```typescript
+// Model expected errors as return values
+export const createPostAction = authActionClient
+  .schema(createPostSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    try {
+      // Action logic
+      return { success: true, post: data };
+    } catch (error) {
+      // Log error but don't expose details
+      logger.error("Create post failed", error);
+      return { success: false, error: "Failed to create post" };
+    }
+  });
+```
+
+## 🚀 **Usage in Components**
+
+```typescript
+"use client";
+import { useAction } from "next-safe-action/hooks";
+import { updatePostAction } from "@/actions/post/update-action";
+
+export function PostForm() {
+  const { execute, result, isExecuting } = useAction(updatePostAction);
+
+  const handleSubmit = async (formData: FormData) => {
+    execute({
+      id: formData.get("id") as string,
+      title: formData.get("title") as string,
+      content: formData.get("content") as string,
+    });
+  };
+
+  return (
+    <form action={handleSubmit}>
+      {/* Form fields */}
+      <button disabled={isExecuting}>
+        {isExecuting ? "Saving..." : "Save"}
+      </button>
+    </form>
+  );
+ }
+ ```

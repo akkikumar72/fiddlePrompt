@@ -1,0 +1,254 @@
+# FiddlePrompt Product Requirements Document
+
+---
+
+## 1. introduction
+
+FiddlePrompt is an innovative web-based application designed as a "playground" for prompt engineering, making it fast and simple to test AI prompts with variables and Jinja2 templates across multiple large language models (LLMs). Inspired by platforms like JSFiddle, FiddlePrompt lets users write, test, and share prompts instantly via unique URLs—ideal for collaboration in real-time, such as during calls or team reviews. This document details the comprehensive product requirements to guide designers, developers, and stakeholders throughout the project.
+
+---
+
+## 2. product overview
+
+FiddlePrompt offers an interactive, browser-based environment where users can:
+
+- Compose prompts using Jinja2 templating syntax
+- Inject variable data and visualize prompt output from various LLMs (starting with OpenAI models)
+- Instantly share prompt sessions via URLs—no authentication required
+- Collaborate synchronously with teammates (view, edit, and rerun prompts as a group)
+- Review, manage, and test prompts using structured interfaces modeled after successful coding playgrounds
+
+The goal is maximum speed and ease—users land at the site URL and start experimenting right away, without registration barriers.
+
+---
+
+## 3. goals and objectives
+
+- **Enable rapid prototyping of AI prompts:** Allow users to create, modify, and test prompts with minimal friction.
+- **Facilitate real-time team collaboration:** Provide intuitive workflow to share and co-edit prompt sessions, including results, across distributed teams.
+- **Support major LLM providers:** Integrate with OpenAI at launch, with architecture prepared for future Google Gemini, Anthropic, Mistral, and other providers.
+- **Leverage Jinja2 templating:** Deliver industry-standard variable templating for dynamic prompt construction.
+- **Present a familiar, productive UI:** Mimic proven paradigms from JSFiddle, with clear separation between navigation, editor, and output/test areas.
+- **Prioritize security and privacy for API keys:** Ensure any user-provided secrets (e.g., OpenAI keys) are stored only locally and never transmitted externally without consent.
+
+---
+
+## 4. target audience
+
+- **Prompt engineers & AI product teams:** Those who quickly iterate on prompts and require easy sharing for feedback or demonstrations.
+- **Developers & QA teams:** Individuals building AI-powered features who need a tool to experiment and test behavior with different variable values.
+- **Educators & AI trainers:** Those who want to demonstrate principles of prompt design or evaluate changes live.
+- **Business analysts & non-technical users:** Team members seeking a low-friction way to test prompts and collaborate without setup overhead.
+
+---
+
+## 5. features and requirements
+
+### 5.1 core workflow
+
+- **No login required:** Users visit the URL, and a temp session is created by default.
+- **Prompt editing workspace:** Central area for writing/editing prompts using syntax-highlighted Jinja2 code editor.
+- **Variable extraction:** Auto-detects Jinja2 variables, generates matching input forms.
+- **Model selection:** Dropdown to select LLM (starting with OpenAI), providing at least: GPT-4, GPT-3.5, and their variants.
+- **Settings modal:** Easy access to provider, model, API key (OpenAI only, browser storage), configuration sliders (temperature, max length), and response format (Text, JSON Object, JSON Schema).
+- **Run/stop execution:** Prominent, accessible button to trigger prompt execution; shows running status and can cancel requests.
+- **Results display:** Clean, readable output with syntax highlighting, multiple result history, timestamping, and copy feature; displays token usage and latency stats.
+- **Sharing:** One-click sharing generates unique URL with workspace state (prompt, variables, results). Session can be visited by others for collaborative editing/running.
+- **Test & evaluate panel:** On the right, provides contextual help, test case management, sample data, Jinja2 syntax reminders, and ability to add new variables/test cases; collapsible and resizable.
+- **Left navigation panel:** Branding/logo, saved prompts list, new prompt shortcut, utilities (feedback, upgrade, help, trash), and collapsibility for workspace efficiency.
+- **Quick actions & transitions:** Responsive UI interactions (hover effects, slide/resize, easy clear actions).
+- **Persistent settings:** API key stored only in browser (localStorage or equivalent).
+- **Collaboration:** Real-time editing and session state synchronization for team collaboration.
+- **Session management:** Automatic expiration of temp sessions after inactivity (configurable).
+
+### 5.2 ui/ux requirements
+
+- Clean, responsive, and modern design using existing TailwindCSS and Shadcn UI paradigms
+- Syntax-highlighted code editor with line numbers, auto-complete, error highlighting for invalid Jinja2
+- Dropdown/modal for model/provider configuration with icons and grouping
+- Resizable dividers between main, left, and right panels
+- Placeholder, empty states, and subtle loading/animation for better guidance
+- Accessible controls with keyboard navigation support
+
+### 5.3 integration requirements
+
+- **OpenAI LLM support:** Provide prompt-route and completion handling via OpenAI APIs (phase 1).
+- **Future provider extensibility:** Abstract model/provider selection logic for later extension.
+
+---
+
+## 6. user stories and acceptance criteria
+
+| Req ID | User Story | Acceptance Criteria |
+|--------|------------|---------------------|
+| ST-101 | As a user, I want to open FiddlePrompt and start editing a prompt immediately without logging in, so I can quickly experiment and iterate. | No login flow; editable playground loads by default; user can write/edit a prompt. |
+| ST-102 | As a user, I want prompts to support Jinja2 templating and auto-detect my variables, so I can easily insert and fill them. | Editor detects variables (e.g., `{{ name }}`), auto-generates input fields beneath. |
+| ST-103 | As a user, I want a collapsible left-side navigation with logo, my prompt list, new prompt, and utilities, so I can manage prompts and workspace. | Left bar includes app logo, navigation, and utility icons; can collapse/expand smoothly. |
+| ST-104 | As a user, I want to select a model from a dropdown and configure temperature/max length, so I can control how prompts run. | Model dropdown includes available OpenAI models; configuration sliders appear in modal; changes apply to session state. |
+| ST-105 | As a user, I want to store my OpenAI API key securely, with it kept only in my browser, so my credentials stay private. | API key entry dialog exists in settings; stored in localStorage; never sent externally or included in shared links. |
+| ST-106 | As a user, I want a "Run" button to execute my prompt and see the model's response in real time, so I can iterate/speculate outcome fast. | Run button triggers loading/processing state; result displays in results pane (right); status indicator visible; prompt can be stopped. |
+| ST-107 | As a user, I want the right panel to help me run test scenarios and variable combinations, so I can evaluate prompt robustness. | Right panel is labeled; ‘+ Test Case’ button available, multiple test cases can be defined using variable sets. |
+| ST-108 | As a user, I want to generate shareable links (like JSFiddle) that save my current session (prompt, variables, results), so I can send to colleagues for real-time collaboration. | Share button copies/opens URL with session state; visiting link loads exact session; co-editing and re-runs are possible (edge case: two users edit simultaneously—session sync logic). |
+| ST-109 | As a user, I want to see run history with timestamps, token usage, and response times so I can monitor iterations and review efficiency. | Results stack chronologically, each entry with time, tokens, latency, and copy button. |
+| ST-110 | As a user, I want smart UI elements—syntax highlighting, bracket match, error warnings—for Jinja2 so it’s easier to compose valid prompts. | Editor highlights syntax, shows errors for invalid Jinja2, enables togg<PRD>
+# FiddlePrompt Product Requirements Document
+
+## 1. introduction
+
+FiddlePrompt is a web-based collaborative prompt playground designed for rapid testing and sharing of AI prompts using templating (Jinja2) and variable substitution. Inspired by JSFiddle, it provides a lightweight, session-based environment for experimenting with prompts across popular AI models, starting with OpenAI. The purpose of this document is to outline the product vision, functional requirements, technical considerations, and user stories required to bring FiddlePrompt to MVP and beyond.
+
+## 2. product overview
+
+FiddlePrompt enables users to interactively craft, test, and share AI prompts in a collaborative, shareable workspace. The application features a three-panel layout: navigation and management (left), a central prompt playground, and a test/evaluation area (right). Sessions are anonymous, temporary, and instantly shareable via URLs, optimizing for real-time collaboration—especially during meetings or remote sprint reviews. FiddlePrompt streamlines the process of prompt engineering by supporting variables through Jinja2 syntax, easy integration with multiple AI providers (with OpenAI as the initial phase), and utilities for prompt/result sharing.
+
+## 3. goals and objectives
+
+- **Rapid prompt testing:** Allow users to quickly edit, test, and iterate on prompts using variable substitution.
+- **Collaboration:** Enable users to share their workspaces and collaborate in real-time through unique session URLs.
+- **Provider flexibility:** Support multiple AI models/providers, starting with OpenAI, with modular expansion for others.
+- **Low-friction access:** Provide immediate access with no login; sessions are temporary but persist via shareable links.
+- **Transparency & repeatability:** Allow users to track and stack run results, view input/output tokens and execution times.
+- **Best-in-class UX:** Create an intuitive, responsive UI comparable to JSFiddle for prompt engineering workflows.
+
+## 4. target audience
+
+- **Prompt engineers:** Technical and non-technical users designing prompts for LLM-powered applications.
+- **Product managers & QA teams:** Teams needing to demo, review, or evaluate AI prompts collaboratively during sprints or calls.
+- **Developers:** Anyone integrating AI APIs who wishes to quickly validate prompt formatting and performance.
+- **Researchers/Educators:** Those needing a controlled environment to experiment with prompts and variables for demonstrations or studies.
+
+## 5. features and requirements
+
+### 5.1 core features
+
+**5.1.1 Session-based instant usage**
+- No login required; unique session created on visit.
+- Workspace state (prompt, variables, results) persists via shareable URLs.
+
+**5.1.2 Multi-panel layout (responsive 20%/50%/30%)**
+- **Left panel:** Branding, navigation, saved items, utilities (upgrade, feedback, help, trash); collapsible.
+- **Main panel:** Prompt editor/playground with controls.
+- **Right panel:** Test & Evaluate (contextual help, variable definitions, test cases); collapsible.
+
+**5.1.3 Model and configuration controls**
+- Model selector dropdown with provider/model icons.
+- Modal (dropdown) for extended configuration:
+  - Provider and model selection.
+  - Maximum response length (slider up to 1000 tokens).
+  - Response format (Text, JSON Object, JSON Schema).
+
+**5.1.4 Prompt editor with Jinja2 support**
+- Syntax-highlighted editor with Jinja2 auto-completion, bracket matching, error highlighting.
+- Variable detection and display panel (expand/collapse).
+- Line numbers (toggleable).
+- Placeholder text: “Enter your prompt with Jinja2 variables…”
+
+**5.1.5 Variable management**
+- Auto-generated input fields based on detected variables (e.g., {{ name }}, {{ age }}).
+
+**5.1.6 Prompt execution**
+- Prominent Run/Stop button; execution status indicator (running, success, error).
+- Real-time prompt execution via selected model/provider (OpenAI in Phase 1).
+- Support for multiple run stacking with timestamped results.
+
+**5.1.7 Results display**
+- Formatted response area with syntax-highlighting for code blocks.
+- Copy-to-clipboard functionality.
+- Empty and loading states with appropriate UX feedback.
+- Token count and execution time display.
+- Button to clear results history.
+
+**5.1.8 Test & Evaluate panel**
+- Add/test different variable sets (test cases) efficiently.
+- List and manage test cases, run prompts against them.
+- Option to add instructions/evaluation notes.
+- Collapsible, resizable side panel.
+
+**5.1.9 Collaboration and sharing**
+- Share button generates unique, shareable session-specific URLs including prompt/code/variables/results.
+- Team members opening the same link view/edit/run together in near real-time.
+
+**5.1.10 Settings**
+- User can set their OpenAI API key, which is stored locally (browser local storage or encrypted IndexedDB).
+- User controls for environment clearing and session reset.
+
+### 5.2 non-functional requirements
+
+- Minimal, responsive UI optimized for desktops and modern browsers.
+- Smooth transitions and hover states for primary actions.
+- Secure handling of user API keys (never transmitted/stored remotely unless required for planned features).
+- All code, business logic, and UI changes should be covered by unit/component/integration tests where practical.
+
+## 6. user stories and acceptance criteria
+
+| ID      | User Story                                                                                              | Acceptance Criteria                                                                                                |
+|---------|--------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
+| ST-101 | As a user, I want to visit fiddleprompt.com and start using the app immediately, without authentication | Landing on the page loads a blank playground. No login required.                                                    |
+| ST-102 | As a user, I want my workspace (prompt, variables, results) to persist in a URL I can share             | Shareable link encodes all necessary session data. Opening the link loads that session state.                      |
+| ST-103 | As a user, I want to select an AI model/provider from a dropdown with icons                             | Models/providers (with icons) listed in dropdown; initial support for OpenAI models only.                          |
+| ST-104 | As a user, I want to configure the response format and max length via modal controls                    | Modal offers relevant configuration controls; changes take effect on subsequent runs.                              |
+| ST-105 | As a user, I want a syntax-highlighting editor that supports Jinja2 syntax features                     | Jinja2 auto-completion, bracket matching and syntax/error highlighting active in editor.                           |
+| ST-106 | As a user, I want detected variables to show and auto-generate form fields                              | Variable pane shows all Jinja2 variables; input fields render below editor accordingly.                            |
+| ST-107 | As a user, I want to run my prompt and see a formatted, readable response                               | ‘Run’ button executes prompt, output appears with formatting and copy functionality.                               |
+| ST-108 | As a user, I want to see execution status (in progress, success, error)                                 | Status indicator updates visibly; error messages displayed as appropriate.                                          |
+| ST-109 | As a user, I want to track previous runs/results                                                        | Results area maintains stack of runs with timestamps, user can clear history.                                      |
+| ST-110 | As a user, I want to see token count and execution time per run                                         | Token and response time shown with each result.                                                                    |
+| ST-111 | As a user, I want to add, manage, and run test cases                                                    | ‘+ Test Case’ adds a test scenario; tests can be run individually or collectively.                                 |
+| ST-112 | As a user, I want to edit prompts/variables and see colleague updates in real time                      | Multiple users on the same link see live updates to editor and test results.                                       |
+| ST-113 | As a user, I want panels to be resizable/collapsible for workspace optimization                         | Panel dividers allow resizing; left/right panels can be collapsed/minimized.                                       |
+| ST-114 | As a user, I want to save and securely use my OpenAI API key                                            | API key stored locally (not sent to backend unless feature requires); prompt runs use this key for authentication.  |
+| ST-115 | As a user, I want smooth UI transitions and quick feedback on actions                                   | All major actions (hover, run, share, error) display appropriate visual feedback/animation.                        |
+| ST-116 | As a user, I want to clear my prompt, variables, and results to reset the session                       | Clear action resets all editor and result areas to empty state.                                                     |
+| ST-117 | As a user, I want to see help, upgrade, feedback, or trash links in an accessible utility panel         | Appropriate icons/links displayed in left panel utility area; UI adapts responsively.                              |
+| ST-118 | (Edge) As a user, I want errors for invalid syntax, failed model calls, or missing variables            | Errors are caught and displayed with actionable feedback; invalid API keys prompt for re-entry.                    |
+| ST-119 | (Alternative) As a user, if I try to visit a non-existent or corrupt session URL, I see an error        | App shows a friendly 404 or recovery prompt with guidance to start fresh.                                          |
+| ST-120 | (Edge) As a user, when my session expires or is purged, I am notified and given options to restore/save | Expired sessions prompt user to save/export or start a new session.                                                |
+| ST-121 | (NFR: Secure Access) As a user, I expect my session data to remain private and not visible to others    | Sessions only accessible by those with link; API keys never shared or visible to others through the link.           |
+| ST-122 | (Database Modeling) As a developer, I want session data handled in lightweight in-memory/URL encoding   | No persistent backend unless/when required for advanced features; use client-side or ephemeral store for MVP.       |
+
+## 7. technical requirements / stack
+
+- **Frontend:** Next.js 15, React 18+, TailwindCSS, Shadcn UI, Lucide Icons, React Hook Form (with zod validation).
+- **State/session management:** Client-side state, possibly using useContext or Zustand (ephemeral for MVP).
+- **Editor:** Monaco (VSCode-like) or CodeMirror offering Jinja2 syntax support and code intelligence.
+- **API integration:** For Phase 1, direct client-side integration with OpenAI APIs using user-supplied keys; future-proofing for Google Gemini, Anthropic, Mistral.
+- **Session sharing:** Session data is encoded in URL fragment or short token; optionally using a lightweight backend if persistence or large session state is needed.
+- **Local storage:** OpenAI API key stored securely in the browser (localStorage or preferably Encrypted IndexedDB).
+- **Collaboration:** Near real-time updates using WebSockets or peer-to-peer (if/when implemented), else optimistic concurrency.
+- **Testing:** Include component/unit tests and integration E2E coverage for all features, especially prompt execution and variable detection.
+
+## 8. design and user interface
+
+### 8.1 Layout
+
+- **Left panel (~20% width):**
+  - Branding/logo at top
+  - Navigation: file list, saved prompts, new item
+  - Utility: upgrade, feedback, help, trash at bottom
+  - Collapsible/minimizable toggle
+
+- **Main panel (~50% width):**
+  - Top controls: Model selector (dropdown), temperature slider, Run button (primary, colored), Share button (secondary)
+  - Editor: Syntax-highlighted, with line numbers, Jinja2 assistance, error highlighting, placeholder text
+  - Variable panel: Collapsible; displays detected Jinja2 variables
+  - Variables form: Auto-generated fields for input
+  - Status: Execution indicator (running/error/success)
+
+- **Right panel (~30% width):**
+  - “Test & Evaluate” header; contextual test options, variable definitions, and sample data
+  - Test cases: Add, edit, run with custom variables/notes
+  - Collapsible/expandable
+  - All panels use resizable dividers
+
+### 8.2 Interaction and feedback
+
+- Run/Stop button: prominent, visual feedback on hover/loading/disabled
+- Share: generates and updates session URL, copies to clipboard
+- Modal dropdown for provider/model with clear icons and configuration fields (response max length, format)
+- Smooth transitions for panel collapse/resize and modal dialogs
+- Responsive layout for usability in various screen sizes (optimized for desktop browser)
+- Error, loading, and empty states use subtle icons/explanatory text
+- All result blocks show timestamp, token count, execution time, and a copy button
+- UX parity with tools like JSFiddle, Langfuse Playground, and Langfa.st
+
+---

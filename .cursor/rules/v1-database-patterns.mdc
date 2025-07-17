@@ -1,0 +1,176 @@
+---
+description: Database patterns, Supabase client usage, and type safety for V1
+alwaysApply: true
+---
+
+# V1 Database & Supabase Patterns
+
+Follow these database patterns for Supabase integration in the V1 codebase.
+
+## 🗄️ **Database Types**
+
+All database types are generated in [packages/supabase/src/types/db.ts](mdc:packages/supabase/src/types/db.ts):
+
+```typescript
+import type { Database } from "@v1/supabase/types";
+
+type Tables = Database["public"]["Tables"];
+type Post = Tables["posts"]["Row"];
+type PostInsert = Tables["posts"]["Insert"];
+type PostUpdate = Tables["posts"]["Update"];
+```
+
+## 🔧 **Supabase Clients**
+
+Use the appropriate client from [packages/supabase/src/clients](mdc:packages/supabase/src/clients):
+
+### Server-Side (RSC, Server Actions)
+```typescript
+import { createClient } from "@v1/supabase/server";
+
+export async function getPosts() {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw new Error("Failed to fetch posts");
+  }
+
+  return data;
+}
+```
+
+### Client-Side (Client Components)
+```typescript
+"use client";
+import { createClient } from "@v1/supabase/client";
+
+export function usePostsQuery() {
+  const supabase = createClient();
+  // Use with React Query or SWR
+}
+```
+
+### Middleware
+```typescript
+import { createClient } from "@v1/supabase/middleware";
+// For auth checks in middleware.ts
+```
+
+## 📚 **Query Patterns**
+
+Create reusable queries in [packages/supabase/src/queries](mdc:packages/supabase/src/queries):
+
+```typescript
+import type { Database } from "../types";
+import { createClient } from "../clients/server";
+
+export async function getPostById(id: string) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from("posts")
+    .select(`
+      *,
+      user:users!posts_user_id_fkey (
+        id,
+        email
+      )
+    `)
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to fetch post: ${error.message}`);
+  }
+
+  return data;
+}
+
+export async function getUserPosts(userId: string) {
+  const supabase = createClient();
+  
+  return supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+}
+```
+
+## 🔐 **Row Level Security (RLS)**
+
+Always implement RLS policies. Example patterns:
+
+```sql
+-- Enable RLS
+ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
+
+-- Users can only see their own posts
+CREATE POLICY "Users can view own posts" ON posts
+  FOR SELECT USING (auth.uid() = user_id);
+
+-- Users can only insert posts with their ID
+CREATE POLICY "Users can insert own posts" ON posts
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+```
+
+## 🚨 **Error Handling**
+
+```typescript
+export async function safeGetPosts() {
+  try {
+    const supabase = createClient();
+    const { data, error } = await supabase.from("posts").select("*");
+    
+    if (error) {
+      logger.error("Database error:", error);
+      return { data: null, error: "Failed to fetch posts" };
+    }
+    
+    return { data, error: null };
+  } catch (err) {
+    logger.error("Unexpected error:", err);
+    return { data: null, error: "An unexpected error occurred" };
+  }
+}
+```
+
+## 🔄 **Mutations**
+
+Create mutations in [packages/supabase/src/mutations](mdc:packages/supabase/src/mutations):
+
+```typescript
+import type { PostInsert, PostUpdate } from "../types";
+
+export async function createPost(post: PostInsert) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from("posts")
+    .insert(post)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePost(id: string, updates: PostUpdate) {
+  const supabase = createClient();
+  
+  const { data, error } = await supabase
+    .from("posts")
+    .update(updates)
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+ }
+ ```

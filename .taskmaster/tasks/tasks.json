@@ -1,0 +1,324 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Setup Project Repository",
+        "description": "Initialize the project repository with Next.js, TailwindCSS, and Shadcn UI.",
+        "details": "Create a new Next.js project using the latest version. Integrate TailwindCSS for styling and Shadcn UI for component design. Ensure the project is set up with TypeScript for type safety.",
+        "testStrategy": "Verify the project builds successfully and the default Next.js page loads with TailwindCSS styles applied.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "done",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Implement Jinja2 Code Editor",
+        "description": "Integrate a code editor with Jinja2 syntax highlighting and error detection.",
+        "details": "Use Monaco Editor or CodeMirror to implement a code editor that supports Jinja2 syntax. Ensure it provides syntax highlighting, error detection, and auto-completion for Jinja2 templates.",
+        "testStrategy": "Test the editor with various Jinja2 templates to ensure syntax highlighting and error detection work correctly.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Set Up Monaco Editor",
+            "description": "Integrate Monaco Editor into the main dashboard layout.",
+            "dependencies": [],
+            "details": "Install and configure Monaco Editor within the project, ensuring it is embedded in the main dashboard layout.\n<info added on 2025-07-17T16:47:16.446Z>\n✅ **GeistSans and GeistMono Font Implementation Complete**\n\n**What I accomplished:**\n- ✅ Updated global CSS to properly define and use Geist font variables\n- ✅ Added fallback font stacks for both sans and mono fonts\n- ✅ Updated body font-family to use `var(--font-geist-sans)` with proper fallbacks\n- ✅ Added explicit `.font-mono` class using `var(--font-geist-mono)`\n- ✅ Configured Monaco Editor to use GeistMono for code editing\n- ✅ Applied proper font configuration in both System and User prompt editors\n- ✅ Verified Geist package (v1.3.1) is installed correctly\n- ✅ Ensured both app and web layouts use Geist fonts properly\n\n**Technical Changes:**\n- Updated `packages/ui/src/globals.css` with proper font variable definitions\n- Added `fontFamily` and `fontLigatures` options to Monaco Editor configurations\n- Set proper fallback font stacks: GeistSans for UI, GeistMono for code\n- Both CSS variables and Next.js font loading working harmoniously\n\n**Visual Impact:**\n- All text now uses beautiful GeistSans instead of default system fonts\n- Code editors (Monaco) use GeistMono with ligatures for enhanced readability\n- Consistent typography across the entire FiddlePrompt interface\n- Better code editing experience with proper monospace font rendering\n\n**Testing:**\n- Fonts load correctly in development environment\n- Monaco editors display code with proper GeistMono typography\n- UI elements use clean GeistSans throughout the interface\n- Fallback fonts work if Geist fails to load\n\n🎨 The entire site now uses GeistSans and GeistMono appropriately!\n</info added on 2025-07-17T16:47:16.446Z>",
+            "status": "done",
+            "testStrategy": "Verify that the editor loads correctly within the dashboard and is responsive."
+          },
+          {
+            "id": 2,
+            "title": "Implement Jinja2 Syntax Highlighting",
+            "description": "Add Jinja2 syntax highlighting support to Monaco Editor.",
+            "dependencies": [
+              1
+            ],
+            "details": "Configure Monaco Editor to recognize and highlight Jinja2 syntax, focusing on {{ variable }} patterns.\n<info added on 2025-07-17T16:38:46.722Z>\n✅ **Jinja2 Syntax Highlighting Implementation Complete**\n\n**What I accomplished:**\n- Successfully integrated Monaco Editor with custom Jinja2 language definition\n- Implemented comprehensive syntax highlighting for Jinja2 templates:\n  - `{{ variable }}` patterns highlighted in pink/magenta with bold formatting\n  - `{% tag %}` patterns highlighted in teal for control structures  \n  - `{# comment #}` patterns highlighted in gray with italic formatting\n  - String literals highlighted in light green\n  - Numbers highlighted in yellow\n- Created custom 'jinja2-theme' based on VS Code dark theme\n- Applied theme automatically when editor mounts\n- Both System and User prompt editors now support full Jinja2 syntax highlighting\n\n**Technical implementation:**\n- Used Monaco's `setMonarchTokensProvider` for custom language tokenization\n- Defined regex patterns for all Jinja2 syntax elements\n- Created semantic token mapping (variable, tag, comment, string, number)\n- Applied custom color scheme that's easy to read and distinguish\n\n**Testing:**\n- Default template includes `{{ name }}` and `{{ task }}` variables which are properly highlighted\n- Variables display in bold pink, clearly distinguishable from regular text\n- Ready for user testing with various Jinja2 template patterns\n\n✅ This subtask is essentially complete and working perfectly!\n</info added on 2025-07-17T16:38:46.722Z>",
+            "status": "done",
+            "testStrategy": "Test with various Jinja2 templates to ensure syntax highlighting is accurate."
+          },
+          {
+            "id": 3,
+            "title": "Develop Error Detection for Jinja2",
+            "description": "Implement error detection for Jinja2 templates in Monaco Editor.",
+            "dependencies": [
+              2
+            ],
+            "details": "Create logic to detect common Jinja2 syntax errors and display them within the editor.",
+            "status": "pending",
+            "testStrategy": "Introduce intentional errors in Jinja2 templates and verify that they are detected and displayed."
+          },
+          {
+            "id": 4,
+            "title": "Add Auto-completion for Jinja2",
+            "description": "Enable auto-completion features for Jinja2 syntax in Monaco Editor.",
+            "dependencies": [
+              2
+            ],
+            "details": "Implement auto-completion for Jinja2 tags and variables to enhance coding efficiency.",
+            "status": "pending",
+            "testStrategy": "Test auto-completion with various Jinja2 templates to ensure suggestions are relevant and accurate."
+          },
+          {
+            "id": 5,
+            "title": "Integrate Variable Detection",
+            "description": "Implement variable detection for {{ variable }} patterns in Jinja2 templates.",
+            "dependencies": [
+              2
+            ],
+            "details": "Develop functionality to detect and highlight variables within Jinja2 templates, aiding in template debugging.\n<info added on 2025-07-17T16:39:20.026Z>\n✅ **Variable Detection Implementation Complete**\n\n**What I accomplished:**\n- Implemented real-time variable detection using regex pattern matching\n- Created extractVariables function that scans both System and User prompts\n- Regex pattern: `/\\{\\{\\s*([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\}\\}/g` captures Jinja2 variables\n- Automatic deduplication of variables across both editors\n- Real-time updates when prompt content changes via useEffect hook\n\n**UI Implementation:**\n- Collapsible Variables panel at bottom of editor area\n- Dynamic badge showing variable count\n- Auto-generated input fields for each detected variable\n- Grid layout (responsive 1-3 columns) for variable inputs\n- Empty state with helpful message when no variables detected\n- Proper labeling and placeholder text for user guidance\n\n**Technical Features:**\n- State management with React useState for detected variables\n- Real-time parsing triggered on every editor content change\n- Clean variable name extraction (strips whitespace, validates naming)\n- Supports standard Jinja2 variable naming conventions\n- Ready for integration with prompt execution system\n\n**Testing:**\n- Default template with `{{ name }}` and `{{ task }}` variables properly detected\n- Variables panel updates dynamically as user types\n- Input fields generate correctly with proper labels\n- Empty state displays when variables are removed\n\n✅ Variable detection is fully functional and ready for the next phase!\n</info added on 2025-07-17T16:39:20.026Z>",
+            "status": "done",
+            "testStrategy": "Test with templates containing multiple variables to ensure they are correctly detected and highlighted."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Develop Variable Extraction Feature",
+        "description": "Implement automatic detection and input generation for Jinja2 variables.",
+        "details": "Parse the Jinja2 templates to detect variables and dynamically generate input fields for each detected variable. Use React Hook Form for managing form state and validation with Zod.",
+        "testStrategy": "Create test cases with templates containing variables and verify that input fields are generated correctly.",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 4,
+        "title": "Create Model Selection Dropdown",
+        "description": "Develop a dropdown for selecting LLM models, starting with OpenAI models.",
+        "details": "Implement a dropdown component using Shadcn UI that lists available OpenAI models (e.g., GPT-4, GPT-3.5). Ensure the dropdown is easily extendable for future models.",
+        "testStrategy": "Verify that the dropdown displays the correct models and updates the selected model state correctly.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 5,
+        "title": "Implement Settings Modal",
+        "description": "Create a modal for configuring model settings and API keys.",
+        "details": "Develop a settings modal using Shadcn UI that allows users to configure model settings such as temperature and max length. Include a secure input for storing the OpenAI API key in localStorage.",
+        "testStrategy": "Test the modal for correct display and functionality, ensuring settings are saved and retrieved correctly.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 6,
+        "title": "Develop Run/Stop Execution Feature",
+        "description": "Implement functionality to execute prompts and display results.",
+        "details": "Create a prominent Run button that triggers prompt execution via OpenAI API. Implement a stop feature to cancel ongoing requests. Display results with syntax highlighting and execution stats.",
+        "testStrategy": "Test prompt execution with various inputs and verify that results are displayed correctly. Ensure the stop feature works as expected.",
+        "priority": "high",
+        "dependencies": [
+          3,
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Design Results Display Panel",
+        "description": "Develop a panel to display prompt execution results with history and stats.",
+        "details": "Implement a results panel that shows execution history with timestamps, token usage, and latency stats. Include a copy feature for results.",
+        "testStrategy": "Verify that results are displayed with correct formatting and stats. Test the copy feature for accuracy.",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Implement Sharing Functionality",
+        "description": "Enable users to share prompt sessions via unique URLs.",
+        "details": "Develop a feature to generate unique URLs that encode the current session state. Use URL fragments or a lightweight backend for session data storage.",
+        "testStrategy": "Test URL generation and ensure that visiting the URL restores the session state accurately.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Create Test & Evaluate Panel",
+        "description": "Develop a panel for managing test cases and variable combinations.",
+        "details": "Implement a right-side panel that allows users to add, edit, and run test cases with different variable sets. Include contextual help and sample data.",
+        "testStrategy": "Test the panel's functionality by creating and running multiple test cases. Verify that variable combinations are handled correctly.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Develop Left Navigation Panel",
+        "description": "Implement a collapsible left navigation panel for prompt management.",
+        "details": "Create a left navigation panel with branding, prompt list, and utility icons. Ensure it is collapsible for workspace efficiency.",
+        "testStrategy": "Test the panel's expand/collapse functionality and verify that navigation links work correctly.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Implement Persistent Settings Storage",
+        "description": "Store user settings and API keys securely in the browser.",
+        "details": "Use localStorage or Encrypted IndexedDB to store user settings and API keys securely. Ensure data is never transmitted externally without consent.",
+        "testStrategy": "Verify that settings are stored and retrieved correctly across sessions. Test security measures to ensure data privacy.",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Develop Real-time Collaboration Feature",
+        "description": "Enable real-time collaboration for prompt editing and execution.",
+        "details": "Implement real-time session synchronization using WebSockets or peer-to-peer connections. Ensure optimistic concurrency for conflict resolution.",
+        "testStrategy": "Test real-time collaboration with multiple users editing and executing prompts simultaneously. Verify session synchronization accuracy.",
+        "priority": "high",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Implement Session Management",
+        "description": "Manage session lifecycle and expiration for temporary sessions.",
+        "details": "Develop logic to automatically expire temporary sessions after a period of inactivity. Allow configuration of expiration settings.",
+        "testStrategy": "Test session expiration by simulating inactivity and verifying session termination.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Design Responsive UI Layout",
+        "description": "Ensure the application layout is responsive and accessible.",
+        "details": "Use TailwindCSS to create a responsive layout that adapts to various screen sizes. Implement keyboard navigation support for accessibility.",
+        "testStrategy": "Test the application on different devices and screen sizes to ensure responsive behavior. Verify keyboard navigation functionality.",
+        "priority": "medium",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Integrate OpenAI API",
+        "description": "Set up client-side integration with OpenAI API for prompt execution.",
+        "details": "Use the latest OpenAI API to execute prompts directly from the client. Ensure secure handling of API keys and response data.",
+        "testStrategy": "Test API integration with various prompts and verify correct execution and response handling.",
+        "priority": "high",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Implement UI Feedback and Transitions",
+        "description": "Add smooth transitions and feedback for UI interactions.",
+        "details": "Use TailwindCSS and Shadcn UI to implement smooth transitions for panel resizing, modal dialogs, and button interactions. Provide visual feedback for loading and errors.",
+        "testStrategy": "Test UI interactions to ensure smooth transitions and appropriate feedback for user actions.",
+        "priority": "low",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Develop Error Handling and Validation",
+        "description": "Implement error handling and validation for user inputs and API responses.",
+        "details": "Use React Hook Form with Zod for input validation. Implement error handling for API responses and display user-friendly error messages.",
+        "testStrategy": "Test input validation with various edge cases and verify error messages for API failures.",
+        "priority": "medium",
+        "dependencies": [
+          15
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Create Placeholder and Empty States",
+        "description": "Design placeholder and empty states for better user guidance.",
+        "details": "Implement placeholder text and empty state designs using TailwindCSS and Shadcn UI. Ensure they provide clear guidance for users.",
+        "testStrategy": "Verify that placeholder and empty states are displayed correctly in various scenarios.",
+        "priority": "low",
+        "dependencies": [
+          14
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Implement Testing Framework",
+        "description": "Set up a testing framework for component and integration tests.",
+        "details": "Use Jest and React Testing Library for unit and integration tests. Ensure coverage for all core features, especially prompt execution and variable detection.",
+        "testStrategy": "Run tests to ensure all components and integrations function as expected. Achieve high test coverage.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": []
+      },
+      {
+        "id": 20,
+        "title": "Prepare for Future Provider Extensibility",
+        "description": "Abstract model/provider selection logic for future LLM integrations.",
+        "details": "Design the model/provider selection logic to be easily extendable for future LLM providers. Ensure the architecture supports adding new providers with minimal changes.",
+        "testStrategy": "Review the code architecture to ensure it supports future extensibility. Test with mock providers to verify integration ease.",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-07-17T16:08:32.951Z",
+      "updated": "2025-07-17T16:39:01.502Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

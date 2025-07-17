@@ -1,0 +1,57 @@
+---
+alwaysApply: true
+description: V1 monorepo project structure and workspace organization
+---
+
+# V1 Project Structure Guide
+
+This is a **Turborepo monorepo** SaaS starter kit based on Midday.ai patterns.
+
+## 🏗️ **Core Architecture**
+
+```
+v1/
+├── apps/                    # Applications
+│   ├── api/                 # Supabase (Auth, DB, Storage, Edge Functions)
+│   ├── app/                 # Main SaaS product (Next.js)
+│   └── web/                 # Marketing website (Next.js)
+├── packages/                # Shared packages
+│   ├── ui/                  # Shadcn/ui components
+│   ├── supabase/           # Database client & types
+│   ├── analytics/          # OpenPanel analytics
+│   ├── email/              # React Email templates
+│   ├── jobs/               # Trigger.dev background jobs
+│   ├── kv/                 # Upstash Redis & rate limiting
+│   └── logger/             # Logging utilities
+└── tooling/                # Build & config tools
+    └── typescript/         # Shared TS configs
+```
+
+## 📦 **Package References**
+
+Always use workspace aliases when importing:
+- `@v1/ui` - UI components from [packages/ui](mdc:packages/ui)
+- `@v1/supabase` - Database from [packages/supabase](mdc:packages/supabase)
+- `@v1/analytics` - Analytics from [packages/analytics](mdc:packages/analytics)
+- `@v1/kv` - Redis & rate limiting from [packages/kv](mdc:packages/kv)
+- `@v1/logger` - Logging from [packages/logger](mdc:packages/logger)
+- `@v1/email` - Email templates from [packages/email](mdc:packages/email)
+- `@v1/jobs` - Background jobs from [packages/jobs](mdc:packages/jobs)
+
+## 🎯 **Key Entry Points**
+
+- **Main App**: [apps/app/src/app](mdc:apps/app/src/app) - SaaS product
+- **Marketing**: [apps/web/src/app](mdc:apps/web/src/app) - Public website  
+- **Database**: [apps/api/supabase](mdc:apps/api/supabase) - Supabase config
+- **UI Components**: [packages/ui/src/components](mdc:packages/ui/src/components)
+- **Actions**: [apps/app/src/actions](mdc:apps/app/src/actions) - Server Actions
+- **DB Types**: [packages/supabase/src/types/db.ts](mdc:packages/supabase/src/types/db.ts)
+
+## 🛠️ **Development Commands**
+
+- `bun dev` - Start all apps in parallel
+- `bun dev:app` - Start main SaaS app only  
+- `bun dev:web` - Start marketing site only
+- `bun build` - Build all apps
+- `bun lint` - Lint with Biome
+- `bun typecheck` - TypeScript checking

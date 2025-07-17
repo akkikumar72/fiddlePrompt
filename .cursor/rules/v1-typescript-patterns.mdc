@@ -1,0 +1,75 @@
+---
+globs: *.ts,*.tsx
+description: TypeScript and code style patterns for V1 codebase
+alwaysApply: true
+---
+
+# V1 TypeScript & Code Style Patterns
+
+Follow these TypeScript patterns used throughout the V1 codebase.
+
+## 🎯 **Core Principles**
+
+- **Functional & Declarative**: Avoid classes, prefer functional patterns
+- **TypeScript First**: Use interfaces over types, strict mode enabled
+- **Early Returns**: Use guard clauses and early returns
+- **Descriptive Names**: Use auxiliary verbs (isLoading, hasError)
+
+## 📁 **File Structure Pattern**
+
+```typescript
+// 1. Imports (external → internal → relative)
+import { z } from "zod";
+import { createClient } from "@v1/supabase/server";
+import { logger } from "@v1/logger";
+
+// 2. Types & Interfaces
+interface UserData {
+  id: string;
+  email: string;
+}
+
+// 3. Main component/function
+export default function Component() {
+  // Implementation
+}
+
+// 4. Helper functions
+function validateInput(data: unknown) {
+  // Implementation
+}
+
+// 5. Constants & schemas
+const userSchema = z.object({
+  email: z.string().email(),
+});
+```
+
+## 🔧 **TypeScript Configuration**
+
+Extend from shared configs:
+```json
+{
+  "extends": "@v1/typescript/base.json"
+}
+```
+
+Key settings from [tooling/typescript/base.json](mdc:tooling/typescript/base.json):
+- `strict: true`
+- `noUncheckedIndexedAccess: true`
+- Target: ES2022, Module: NodeNext
+
+## 🚫 **Avoid Patterns**
+
+- ❌ Classes (use functions)
+- ❌ Enums (use const objects or maps)
+- ❌ Default exports for utilities (prefer named)
+- ❌ `any` type (use `unknown` or proper typing)
+
+## ✅ **Prefer Patterns**
+
+- ✅ Interface over type for object shapes
+- ✅ Function keyword for pure functions
+- ✅ Const assertions for immutable data
+- ✅ Zod for runtime validation
+- ✅ Early returns and guard clauses

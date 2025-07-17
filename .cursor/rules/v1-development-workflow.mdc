@@ -1,0 +1,146 @@
+---
+description: Development workflow, tooling, and best practices for V1 monorepo
+alwaysApply: true
+---
+
+# V1 Development Workflow
+
+Development patterns and tooling conventions for the V1 monorepo.
+
+## 🛠️ **Core Tools**
+
+- **Package Manager**: Bun (see [use-bun-instead-of-node-vite-npm-pnpm](mdc:.cursor/rules/use-bun-instead-of-node-vite-npm-pnpm.mdc))
+- **Build System**: Turborepo
+- **Linting**: Biome (replaces ESLint + Prettier)
+- **Type Checking**: TypeScript strict mode
+- **Database**: Supabase
+- **Analytics**: OpenPanel
+
+## 📦 **Monorepo Commands**
+
+```bash
+# Development
+bun dev              # Start all apps in parallel
+bun dev:app          # Start main SaaS app only
+bun dev:web          # Start marketing site only
+bun dev:jobs         # Start background jobs
+
+# Building
+bun build            # Build all apps
+bun clean            # Clean all build artifacts
+bun clean:workspaces # Clean node_modules
+
+# Quality
+bun lint             # Lint all packages with Biome
+bun format           # Format all code with Biome
+bun typecheck        # TypeScript checking
+bun test             # Run all tests
+```
+
+## 🎨 **Code Quality**
+
+### Biome Configuration
+Reference: [biome.json](mdc:biome.json)
+
+```json
+{
+  "organizeImports": { "enabled": true },
+  "linter": { "enabled": true, "rules": { "recommended": true } },
+  "formatter": { "indentStyle": "space" }
+}
+```
+
+### Pre-commit Workflow
+1. Biome auto-fixes formatting and imports
+2. TypeScript compilation check
+3. Lint rules validation
+
+## 🔧 **Environment Setup**
+
+### Required Environment Variables
+```bash
+# Supabase
+SUPABASE_API_KEY=
+SUPABASE_SERVICE_KEY=
+
+# Upstash Redis
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# Analytics
+OPENPANEL_SECRET_KEY=
+
+# Email
+RESEND_API_KEY=
+
+# Error Monitoring
+SENTRY_AUTH_TOKEN=
+SENTRY_ORG=
+SENTRY_PROJECT=
+```
+
+## 📁 **Adding New Features**
+
+### 1. New UI Component
+```bash
+# Add to packages/ui/src/components/
+touch packages/ui/src/components/new-component.tsx
+
+# Export in packages/ui/package.json
+"./new-component": "./src/components/new-component.tsx"
+```
+
+### 2. New Server Action
+```bash
+# Create in apps/app/src/actions/
+mkdir apps/app/src/actions/feature
+touch apps/app/src/actions/feature/schema.ts
+touch apps/app/src/actions/feature/action.ts
+```
+
+### 3. New Database Table
+```bash
+# Create migration in apps/api/supabase/migrations/
+bun supabase migration new create_table_name
+
+# Generate types after migration
+bun supabase gen types typescript --local > packages/supabase/src/types/db.ts
+```
+
+## 🚀 **Deployment**
+
+### Apps Structure
+- **`apps/app`** - Main SaaS product (deploy to Vercel)
+- **`apps/web`** - Marketing site (deploy to Vercel)
+- **`apps/api`** - Supabase project (self-hosted or cloud)
+
+### Build Pipeline
+1. `bun lint` - Code quality checks
+2. `bun typecheck` - Type safety validation
+3. `bun build` - Production builds
+4. Deploy to respective platforms
+
+## 🔍 **Debugging**
+
+### Development Tools
+- **Supabase Studio** - Database management
+- **Upstash Console** - Redis monitoring
+- **Sentry** - Error tracking
+- **OpenPanel** - Analytics dashboard
+
+### Logging
+Use [packages/logger](mdc:packages/logger) for structured logging:
+
+```typescript
+import { logger } from "@v1/logger";
+
+logger.info("User action", { userId, action: "create_post" });
+logger.error("Database error", error);
+```
+
+## 📊 **Performance**
+
+- **Web Vitals**: Optimize LCP, CLS, FID
+- **Bundle Analysis**: Use `bun build --analyze`
+- **Database**: Monitor query performance in Supabase
+- **Caching**: Leverage Upstash Redis for rate limiting and caching

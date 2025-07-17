@@ -1,0 +1,113 @@
+---
+globs: *.tsx,*.jsx
+description: React component patterns and Shadcn/ui conventions for V1
+alwaysApply: true
+---
+
+# V1 Component Architecture
+
+Follow these React and UI component patterns used in the V1 codebase.
+
+## 🧩 **Shadcn/ui Pattern**
+
+Components follow the Shadcn/ui architecture in [packages/ui](mdc:packages/ui):
+
+```typescript
+// Component with variants using class-variance-authority
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "../utils";
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center text-sm font-medium",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground",
+        destructive: "bg-destructive text-destructive-foreground",
+      },
+      size: {
+        default: "h-9 px-4 py-2",
+        sm: "h-8 px-3 text-xs",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+);
+
+interface ButtonProps extends VariantProps<typeof buttonVariants> {
+  children: React.ReactNode;
+}
+
+export function Button({ variant, size, children, ...props }: ButtonProps) {
+  return (
+    <button className={cn(buttonVariants({ variant, size }))} {...props}>
+      {children}
+    </button>
+  );
+}
+```
+
+## 📦 **UI Package Imports**
+
+Use direct component imports from [packages/ui](mdc:packages/ui):
+
+```typescript
+import { Button } from "@v1/ui/button";
+import { Card, CardContent } from "@v1/ui/card";
+import { Dialog, DialogTrigger } from "@v1/ui/dialog";
+import { cn } from "@v1/ui/cn";
+```
+
+## 🎨 **Styling Conventions**
+
+- **TailwindCSS**: Use utility classes with mobile-first approach
+- **cn() utility**: Always use for conditional classes
+- **Design tokens**: Use CSS variables for colors (--primary, --secondary)
+- **Responsive**: Mobile-first with sm:, md:, lg: breakpoints
+
+## 🔧 **Component Structure**
+
+```typescript
+// 1. Imports
+import { forwardRef } from "react";
+import { cn } from "@v1/ui/cn";
+
+// 2. Interface  
+interface ComponentProps {
+  children: React.ReactNode;
+  variant?: "default" | "secondary";
+}
+
+// 3. Component (prefer function syntax)
+export function Component({ children, variant = "default" }: ComponentProps) {
+  return (
+    <div className={cn("base-classes", variant === "secondary" && "variant-classes")}>
+      {children}
+    </div>
+  );
+}
+
+// For forwardRef patterns (form inputs, etc.)
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ className, ...props }, ref) => {
+    return (
+      <input
+        ref={ref}
+        className={cn("base-input-classes", className)}
+        {...props}
+      />
+    );
+  }
+);
+Input.displayName = "Input";
+```
+
+## 🚀 **Performance Patterns**
+
+- **Server Components**: Default to RSC, minimize 'use client'
+- **Suspense**: Wrap client components with fallbacks
+- **Dynamic imports**: Use for non-critical components
+- **Avoid excessive useState/useEffect**: Prefer server-side data
