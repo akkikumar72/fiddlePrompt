@@ -9,15 +9,24 @@ import { Badge } from "@v1/ui/badge";
 import { Separator } from "@v1/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@v1/ui/tabs";
 import { ChevronDown, ChevronUp, Variable, Type, Hash } from "lucide-react";
+import {
+  combineVariables,
+  extractVariablesWithMetadata,
+  type ParsedJinjaVariable,
+} from "@/lib/jinja-parser";
+import { VariableForm } from "../variables/variable-form";
 
 export function MainEditor() {
   const [systemPrompt, setSystemPrompt] = useState(
     "You are a helpful AI assistant."
   );
   const [userPrompt, setUserPrompt] = useState(
-    "Hello {{ name }}, can you help me with {{ task }}?"
+    "Hello {{ name:string[min=2,max=20] }}, can you help me with {{ task:text }}?"
   );
-  const [detectedVariables, setDetectedVariables] = useState<string[]>([]);
+  const [detectedVariables, setDetectedVariables] = useState<
+    ParsedJinjaVariable[]
+  >([]);
+  const [variableValues, setVariableValues] = useState<Record<string, any>>({});
   const [isVariablePanelExpanded, setIsVariablePanelExpanded] = useState(true);
 
   const systemEditorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(
@@ -29,24 +38,112 @@ export function MainEditor() {
 
   // Extract variables from Jinja2 templates
   useEffect(() => {
-    const extractVariables = (text: string): string[] => {
-      const variableRegex = /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g;
-      const matches = [...text.matchAll(variableRegex)];
-      return [
-        ...new Set(
-          matches
-            .map((match) => match[1])
-            .filter((v): v is string => v !== undefined)
-        ),
-      ];
-    };
-
-    const systemVars = extractVariables(systemPrompt);
-    const userVars = extractVariables(userPrompt);
-    const allVars = [...new Set([...systemVars, ...userVars])];
-
-    setDetectedVariables(allVars);
+    const variables = combineVariables([systemPrompt, userPrompt]);
+    setDetectedVariables(variables);
   }, [systemPrompt, userPrompt]);
+
+  // Jinja2 error detection
+  const validateJinja2Syntax = (
+    text: string,
+    monaco: typeof import("monaco-editor"),
+    model: monaco.editor.ITextModel
+  ) => {
+    const markers: monaco.editor.IMarkerData[] = [];
+    const lines = text.split("\n");
+
+    lines.forEach((line, lineIndex) => {
+      // Check for unmatched opening braces
+      const openingBraces = (line.match(/\{\{/g) || []).length;
+      const closingBraces = (line.match(/\}\}/g) || []).length;
+      const openingTags = (line.match(/\{%/g) || []).length;
+      const closingTags = (line.match(/%\}/g) || []).length;
+
+      if (openingBraces !== closingBraces) {
+        markers.push({
+          severity: monaco.MarkerSeverity.Error,
+          startLineNumber: lineIndex + 1,
+          startColumn: 1,
+          endLineNumber: lineIndex + 1,
+          endColumn: line.length + 1,
+          message: "Unmatched variable braces {{ }}",
+        });
+      }
+
+      if (openingTags !== closingTags) {
+        markers.push({
+          severity: monaco.MarkerSeverity.Error,
+          startLineNumber: lineIndex + 1,
+          startColumn: 1,
+          endLineNumber: lineIndex + 1,
+          endColumn: line.length + 1,
+          message: "Unmatched template tags {% %}",
+        });
+      }
+
+      // Check for invalid variable names
+      const variableMatches = [...line.matchAll(/\{\{\s*([^}]*)\s*\}\}/g)];
+      variableMatches.forEach((match) => {
+        const variableName = match[1]?.trim();
+        if (
+          variableName &&
+          !/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*(\|[a-zA-Z_][a-zA-Z0-9_]*)*$/.test(
+            variableName
+          )
+        ) {
+          const startPos = line.indexOf(match[0]);
+          markers.push({
+            severity: monaco.MarkerSeverity.Warning,
+            startLineNumber: lineIndex + 1,
+            startColumn: startPos + 1,
+            endLineNumber: lineIndex + 1,
+            endColumn: startPos + match[0].length + 1,
+            message: `Invalid variable name: ${variableName}`,
+          });
+        }
+      });
+
+      // Check for empty variables
+      if (line.includes("{{}}") || line.includes("{{ }}")) {
+        const startPos = line.indexOf("{{");
+        markers.push({
+          severity: monaco.MarkerSeverity.Warning,
+          startLineNumber: lineIndex + 1,
+          startColumn: startPos + 1,
+          endLineNumber: lineIndex + 1,
+          endColumn: startPos + 4,
+          message: "Empty variable declaration",
+        });
+      }
+    });
+
+    monaco.editor.setModelMarkers(model, "jinja2", markers);
+  };
+
+  // Handle variable form submission
+  const handleVariableValuesChange = (values: Record<string, any>) => {
+    // Don't call setVariableValues here - it's causing an infinite loop
+    // Instead, just store the values for use when needed (like for prompt execution)
+    // This breaks the circular dependency
+    console.log("Variable values updated:", values);
+    // You can still use the values for other operations that don't trigger re-renders
+  };
+
+  // Add useEffect to handle variable value changes when form values change
+  useEffect(() => {
+    // Only update if we have detected variables and no values yet
+    if (
+      detectedVariables.length > 0 &&
+      Object.keys(variableValues).length === 0
+    ) {
+      // Generate default empty values
+      const defaultValues = detectedVariables.reduce((acc, variable) => {
+        acc[variable.name] = variable.defaultValue || "";
+        return acc;
+      }, {} as Record<string, any>);
+
+      setVariableValues(defaultValues);
+    }
+  }, [detectedVariables]);
 
   const handleEditorDidMount = (
     editor: monaco.editor.IStandaloneCodeEditor,
@@ -81,6 +178,144 @@ export function MainEditor() {
       },
     });
 
+    // Register auto-completion provider
+    monaco.languages.registerCompletionItemProvider("jinja2", {
+      provideCompletionItems: (model, position) => {
+        const word = model.getWordUntilPosition(position);
+        const range = {
+          startLineNumber: position.lineNumber,
+          endLineNumber: position.lineNumber,
+          startColumn: word.startColumn,
+          endColumn: word.endColumn,
+        };
+
+        const suggestions: monaco.languages.CompletionItem[] = [
+          // Variable suggestions
+          {
+            label: "{{ variable }}",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "{{ ${1:variable_name} }}",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "Insert a variable",
+            range: range,
+          },
+          {
+            label: "{{ variable | filter }}",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "{{ ${1:variable} | ${2:filter} }}",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "Insert a variable with filter",
+            range: range,
+          },
+          // Common Jinja2 filters
+          {
+            label: "upper",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "upper",
+            documentation: "Convert to uppercase",
+            range: range,
+          },
+          {
+            label: "lower",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "lower",
+            documentation: "Convert to lowercase",
+            range: range,
+          },
+          {
+            label: "title",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "title",
+            documentation: "Convert to title case",
+            range: range,
+          },
+          {
+            label: "capitalize",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "capitalize",
+            documentation: "Capitalize first letter",
+            range: range,
+          },
+          {
+            label: "length",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "length",
+            documentation: "Get length of string/list",
+            range: range,
+          },
+          {
+            label: "default",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "default(${1:fallback})",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "Provide default value",
+            range: range,
+          },
+          {
+            label: "trim",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "trim",
+            documentation: "Remove whitespace",
+            range: range,
+          },
+          {
+            label: "replace",
+            kind: monaco.languages.CompletionItemKind.Function,
+            insertText: "replace(${1:old}, ${2:new})",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "Replace text",
+            range: range,
+          },
+          // Control structures
+          {
+            label: "{% if %}",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "{% if ${1:condition} %}\n\t${2:content}\n{% endif %}",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "If conditional block",
+            range: range,
+          },
+          {
+            label: "{% for %}",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText:
+              "{% for ${1:item} in ${2:items} %}\n\t${3:content}\n{% endfor %}",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "For loop block",
+            range: range,
+          },
+          {
+            label: "{% comment %}",
+            kind: monaco.languages.CompletionItemKind.Snippet,
+            insertText: "{# ${1:comment} #}",
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            documentation: "Comment block",
+            range: range,
+          },
+        ];
+
+        // Add detected variables as suggestions
+        detectedVariables.forEach((variable) => {
+          suggestions.push({
+            label: variable.name,
+            kind: monaco.languages.CompletionItemKind.Variable,
+            insertText: variable.name,
+            documentation: `Detected variable: ${variable.name}`,
+            range: range,
+          });
+        });
+
+        return { suggestions };
+      },
+    });
+
     // Define theme colors for Jinja2
     monaco.editor.defineTheme("jinja2-theme", {
       base: "vs-dark",
@@ -96,6 +331,18 @@ export function MainEditor() {
     });
 
     monaco.editor.setTheme("jinja2-theme");
+
+    // Set up error detection
+    const model = editor.getModel();
+    if (model) {
+      // Initial validation
+      validateJinja2Syntax(model.getValue(), monaco, model);
+
+      // Validate on content changes
+      model.onDidChangeContent(() => {
+        validateJinja2Syntax(model.getValue(), monaco, model);
+      });
+    }
   };
 
   return (
@@ -211,35 +458,10 @@ export function MainEditor() {
 
         {isVariablePanelExpanded && (
           <div className="p-4 border-t border-border bg-muted/20">
-            {detectedVariables.length > 0 ? (
-              <div className="space-y-3">
-                <div className="text-xs font-medium text-muted-foreground">
-                  Detected Variables ({detectedVariables.length})
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {detectedVariables.map((variable) => (
-                    <div key={variable} className="space-y-1">
-                      <label className="text-xs font-medium text-muted-foreground">
-                        {variable}
-                      </label>
-                      <input
-                        type="text"
-                        placeholder={`Enter value for ${variable}`}
-                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-6 text-muted-foreground">
-                <Variable className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No variables detected</p>
-                <p className="text-xs">
-                  Use {"{{ variable_name }}"} syntax to add variables
-                </p>
-              </div>
-            )}
+            <VariableForm
+              variables={detectedVariables}
+              onSubmit={handleVariableValuesChange}
+            />
           </div>
         )}
       </div>

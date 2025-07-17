@@ -1,0 +1,21 @@
+{
+	"meta": {
+		"generatedAt": "2025-07-17T19:32:02.191Z",
+		"tasksAnalyzed": 1,
+		"totalTasks": 20,
+		"analysisCount": 1,
+		"thresholdScore": 5,
+		"projectName": "Taskmaster",
+		"usedResearch": true
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 3,
+			"taskTitle": "Develop Variable Extraction Feature",
+			"complexityScore": 8,
+			"recommendedSubtasks": 5,
+			"expansionPrompt": "Consider breaking down the task into subtasks such as: 1) Parsing Jinja2 templates to identify variables, 2) Integrating React Hook Form for dynamic input generation, 3) Implementing form validation using Zod, 4) Creating unit tests for variable detection, 5) Developing integration tests for form generation.",
+			"reasoning": "The task involves parsing templates, integrating with React Hook Form, and using Zod for validation, which requires a good understanding of both frontend and backend technologies. The complexity is increased by the need to dynamically generate and validate input fields based on detected variables."
+		}
+	]
+}
