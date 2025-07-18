@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Develop Left Navigation Panel
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: Implement a collapsible left navigation panel for prompt management.
+# Details:
+Create a left navigation panel with branding, prompt list, and utility icons. Ensure it is collapsible for workspace efficiency.
+
+# Test Strategy:
+Test the panel's expand/collapse functionality and verify that navigation links work correctly.

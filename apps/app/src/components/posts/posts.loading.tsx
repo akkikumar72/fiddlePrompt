@@ -1,3 +1,3 @@
 export function PostsLoading() {
-  return <div>Loading...</div>;
+  return <div>Loading...</div>
 }

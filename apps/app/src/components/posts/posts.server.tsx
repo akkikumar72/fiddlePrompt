@@ -1,13 +1,13 @@
-import { getPosts } from "@v1/supabase/queries";
+import { getPosts } from "@v1/supabase/queries"
 
 export async function PostsServer() {
-  const { data } = await getPosts();
+  const { data } = await getPosts()
 
   return (
     <div>
-      {data?.map((post) => (
+      {data?.map(post => (
         <div key={post.id}>{post.title}</div>
       ))}
     </div>
-  );
+  )
 }

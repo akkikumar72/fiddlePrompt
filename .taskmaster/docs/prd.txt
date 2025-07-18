@@ -136,3 +136,9 @@ The goal is maximum speed and ease—users land at the site URL and start experi
 - Error, loading, and empty states use subtle icons/explanatory text
 - All result blocks show timestamp, token count, execution time, and a copy button
 - UX parity with tools like JSFiddle, Langfuse Playground, and Langfa.st 
+
+## 9. Style and Conventions
+
+*   Follow coding conventions established in the existing codebase.
+*   Ensure linting (`npm run lint`) passes for all new/modified code.
+*   Ensure test (`npm run test`) passes for all new/modified code.

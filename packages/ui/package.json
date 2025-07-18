@@ -3,11 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "sideEffects": false,
-  "files": [
-    "tailwind.config.ts",
-    "postcss.config.js",
-    "globals.css"
-  ],
+  "files": ["tailwind.config.ts", "postcss.config.js", "globals.css"],
   "scripts": {
     "clean": "rm -rf .turbo node_modules",
     "lint": "biome check .",
@@ -59,6 +55,7 @@
     "./skeleton": "./src/components/skeleton.tsx",
     "./spinner": "./src/components/spinner.tsx",
     "./switch": "./src/components/switch.tsx",
+    "./model-configuration": "./src/components/model-configuration.tsx",
     "./multiple-selector": "./src/components/multiple-selector.tsx",
     "./table": "./src/components/table.tsx",
     "./tabs": "./src/components/tabs.tsx",
@@ -112,6 +109,7 @@
     "cmdk": "1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.23.6",
     "input-otp": "^1.4.2",
     "jsonfile": "^6.1.0",
     "lucide-react": "^0.511.0",
@@ -129,6 +127,6 @@
     "autoprefixer": "^10.4.21",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.5.4"
   }
 }

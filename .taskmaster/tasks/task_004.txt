@@ -1,0 +1,61 @@
+# Task ID: 4
+# Title: Create Model Selection Dropdown
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: Develop a dropdown for selecting LLM models, starting with OpenAI models, and include comprehensive model configuration options and response settings.
+# Details:
+Implement a dropdown component using Shadcn UI that lists available OpenAI models (e.g., GPT-4, GPT-3.5). Ensure the dropdown is easily extendable for future models. Include configuration sections with Radix sliders for temperature, maximum length, top P, frequency penalty, and presence penalty controls. Add response sections with a format dropdown (options: Text, JSON object) and a streaming toggle (enabled/disabled). This will create a comprehensive model configuration interface similar to ChatGPT or other AI platforms.
+
+# Test Strategy:
+Verify that the dropdown displays the correct models and updates the selected model state correctly. Test the configuration controls to ensure they adjust settings accurately. Confirm that the response format dropdown and streaming toggle function as expected.
+
+# Subtasks:
+## 1. Implement Basic Model Selection Dropdown [pending]
+### Dependencies: None
+### Description: Create the basic dropdown interface for selecting LLM models using Shadcn UI components.
+### Details:
+Implement a dropdown component that lists available OpenAI models (GPT-4, GPT-4-turbo, GPT-3.5-turbo, etc.). Use Shadcn UI Select component with proper styling and state management. Ensure the dropdown is extensible for future model additions.
+
+## 2. Add Temperature Control with Radix Slider [pending]
+### Dependencies: 4.1
+### Description: Implement temperature configuration using a Radix slider component for controlling model creativity.
+### Details:
+Create a temperature control using Shadcn UI Slider component (based on Radix). Range should be 0-2 with step 0.1, default value 0.7. Include proper labeling, value display, and helpful tooltips explaining temperature effects on model output.
+
+## 3. Add Maximum Length Control with Radix Slider [pending]
+### Dependencies: 4.1
+### Description: Implement maximum token length configuration using a Radix slider component.
+### Details:
+Create a maximum length control using Shadcn UI Slider component. Range should be 1-4096 tokens with appropriate step size (e.g., 256). Default value should be 1024. Include value display and explanatory tooltip about token limits and costs.
+
+## 4. Add Top P Control with Radix Slider [pending]
+### Dependencies: 4.1
+### Description: Implement Top P (nucleus sampling) configuration using a Radix slider component.
+### Details:
+Create a Top P control using Shadcn UI Slider component. Range should be 0-1 with step 0.01, default value 1.0. Include proper labeling, value display, and tooltip explaining how Top P affects token selection and output diversity.
+
+## 5. Add Frequency Penalty Control with Radix Slider [pending]
+### Dependencies: 4.1
+### Description: Implement frequency penalty configuration using a Radix slider component to reduce repetition.
+### Details:
+Create a frequency penalty control using Shadcn UI Slider component. Range should be -2.0 to 2.0 with step 0.1, default value 0.0. Include proper labeling, value display, and tooltip explaining how frequency penalty reduces repetitive text generation.
+
+## 6. Add Presence Penalty Control with Radix Slider [pending]
+### Dependencies: 4.1
+### Description: Implement presence penalty configuration using a Radix slider component to encourage topic diversity.
+### Details:
+Create a presence penalty control using Shadcn UI Slider component. Range should be -2.0 to 2.0 with step 0.1, default value 0.0. Include proper labeling, value display, and tooltip explaining how presence penalty encourages new topics and reduces topic repetition.
+
+## 7. Add Response Format Dropdown [pending]
+### Dependencies: 4.1
+### Description: Implement response format selection dropdown with Text and JSON object options.
+### Details:
+Create a response format dropdown using Shadcn UI Select component with two options: Text (default) and JSON object. This will allow users to specify whether they want plain text responses or structured JSON responses from the AI model. Include proper labeling and state management.
+
+## 8. Add Streaming Toggle Functionality [pending]
+### Dependencies: 4.1
+### Description: Implement streaming toggle to enable/disable real-time response streaming.
+### Details:
+Create a streaming toggle using Shadcn UI Switch component. When enabled, responses will stream in real-time as the AI generates them. When disabled, the complete response will be shown at once. Include proper labeling, tooltip explaining streaming benefits, and state management integration.
+

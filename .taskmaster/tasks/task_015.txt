@@ -1,0 +1,11 @@
+# Task ID: 15
+# Title: Integrate OpenAI API
+# Status: pending
+# Dependencies: 6
+# Priority: high
+# Description: Set up client-side integration with OpenAI API for prompt execution.
+# Details:
+Use the latest OpenAI API to execute prompts directly from the client. Ensure secure handling of API keys and response data.
+
+# Test Strategy:
+Test API integration with various prompts and verify correct execution and response handling.

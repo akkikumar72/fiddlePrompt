@@ -30,8 +30,8 @@
     "next-safe-action": "^7.9.0",
     "next-themes": "^0.3.0",
     "nuqs": "^1.18.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
     "react-hook-form": "^7.60.0",
     "zod": "^3.23.8"
   },

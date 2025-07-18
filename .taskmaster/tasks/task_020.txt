@@ -1,0 +1,11 @@
+# Task ID: 20
+# Title: Prepare for Future Provider Extensibility
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Abstract model/provider selection logic for future LLM integrations.
+# Details:
+Design the model/provider selection logic to be easily extendable for future LLM providers. Ensure the architecture supports adding new providers with minimal changes.
+
+# Test Strategy:
+Review the code architecture to ensure it supports future extensibility. Test with mock providers to verify integration ease.

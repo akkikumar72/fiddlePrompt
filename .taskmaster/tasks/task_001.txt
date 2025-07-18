@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Setup Project Repository
+# Status: done
+# Dependencies: None
+# Priority: high
+# Description: Initialize the project repository with Next.js, TailwindCSS, and Shadcn UI.
+# Details:
+Create a new Next.js project using the latest version. Integrate TailwindCSS for styling and Shadcn UI for component design. Ensure the project is set up with TypeScript for type safety.
+
+# Test Strategy:
+Verify the project builds successfully and the default Next.js page loads with TailwindCSS styles applied.

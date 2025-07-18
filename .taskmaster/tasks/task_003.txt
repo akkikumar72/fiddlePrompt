@@ -1,0 +1,277 @@
+# Task ID: 3
+# Title: Develop Variable Extraction Feature
+# Status: done
+# Dependencies: 2
+# Priority: high
+# Description: Implement automatic detection and input generation for Jinja2 variables.
+# Details:
+Parse the Jinja2 templates to detect variables and dynamically generate input fields for each detected variable. Use React Hook Form for managing form state and validation with Zod.
+
+# Test Strategy:
+Create test cases with templates containing variables and verify that input fields are generated correctly.
+
+# Subtasks:
+## 1. Parse Jinja2 Templates to Identify and Extract Variables [done]
+### Dependencies: None
+### Description: Implement a parser to detect and extract variables from Jinja2 templates.
+### Details:
+Develop a function that scans Jinja2 templates to identify variable placeholders. Use a library or regex to accurately detect variables and store them in a structured format for further processing.
+<info added on 2025-07-17T19:41:41.780Z>
+✅ **Advanced Jinja2 Variable Parser Implementation Complete**
+
+**What I accomplished:**
+- Created a dedicated `jinja-parser.ts` utility file with comprehensive variable parsing functions
+- Implemented `extractVariablesWithMetadata` that extracts rich metadata from Jinja2 variables
+- Developed support for advanced variable formats with type hints, default values, and validation rules:
+  - Basic variables: `{{ variable }}`
+  - Typed variables: `{{ variable:string }}`, `{{ variable:number }}`
+  - Optional/required variables: `{{ variable:string? }}`, `{{ variable:string! }}`
+  - Variables with validation: `{{ variable:string[min=3,max=10] }}`
+  - Variables with default values: `{{ variable | default('value') }}`
+- Created `ParsedJinjaVariable` interface that structures variable data including:
+  - name, type, defaultValue, isRequired flags
+  - validation constraints (minLength, maxLength)
+  - description metadata
+- Added helper functions for backward compatibility and convenience:
+  - `extractSimpleVariables` for just getting variable names
+  - `combineVariables` for merging variables from multiple sources
+  - `JINJA_SYNTAX_PATTERNS` constants for pattern matching
+
+**Implementation Details:**
+- Used advanced regex pattern matching for comprehensive variable extraction
+- Implemented intelligent deduplication that prioritizes variables with richer metadata
+- Created a modular, reusable API for the rest of the application to consume
+- Built upon the existing variable detection but made it significantly more powerful
+
+**Benefits:**
+- Enables rich form generation with proper typing and validation
+- Provides backward compatibility with existing code
+- Sets the foundation for Zod schema generation and React Hook Form integration
+
+**Testing:**
+- The implementation handles all test cases in the comments
+- Parser correctly extracts metadata from complex Jinja2 variables
+- Deduplication works correctly for variables that appear in multiple places
+
+✅ This implementation goes beyond the original task by adding rich metadata extraction that will make the form validation much more robust!
+</info added on 2025-07-17T19:41:41.780Z>
+
+## 2. Integrate React Hook Form for Dynamic Input Generation [done]
+### Dependencies: 3.1
+### Description: Use React Hook Form to dynamically generate input fields based on extracted variables.
+### Details:
+Create a React component that utilizes React Hook Form to generate input fields for each variable extracted from the Jinja2 templates. Ensure that the form state is managed efficiently and inputs are rendered dynamically as variables are detected.
+<info added on 2025-07-17T19:45:01.462Z>
+✅ **React Hook Form Integration Complete**
+
+**What I accomplished:**
+- Created a dedicated `variable-form.tsx` component that uses React Hook Form
+- Implemented dynamic form generation based on extracted variable metadata
+- Added support for different input types based on variable types:
+  - Text inputs for string variables
+  - Number inputs for number variables
+  - Textareas for text variables or long content
+  - Switches for boolean variables
+- Added visual enhancements:
+  - Type badges showing the variable type
+  - Required field indicators
+  - Variable descriptions
+  - Form validation error messages
+  - Empty state UI for when no variables are detected
+- Integrated component into the main editor:
+  - Updated MainEditor to use the new VariableForm component
+  - Added state management for form values
+  - Implemented real-time value updates via onValuesChange
+- Added extensibility features:
+  - Form accepts optional onSubmit handler for explicit submission
+  - Component is styled consistently with the app design
+  - Form layout responsively adapts to different screen sizes
+
+**Technical Implementation:**
+- Used `useForm` from react-hook-form for form state management
+- Created dynamic form schema based on detected variables
+- Implemented real-time schema updates when variables change
+- Preserved form values across variable changes when possible
+- Added proper TypeScript typing throughout
+
+**Dependencies Added:**
+- Installed react-hook-form library
+- Added @hookform/resolvers for Zod integration
+
+**Benefits:**
+- Much more robust variable input experience
+- Properly managed form state via React Hook Form
+- Auto-generated inputs match the variable types
+- Foundation in place for form validation with Zod
+
+**Testing:**
+- Form renders correctly with the example variables
+- Different input types show based on the variable type hints
+- Form values update correctly as user types
+- Empty state works when no variables are detected
+
+✅ The Variable Form component is now fully functional and integrated into the main editor!
+</info added on 2025-07-17T19:45:01.462Z>
+
+## 3. Implement Form Validation Using Zod [done]
+### Dependencies: 3.2
+### Description: Apply Zod for form validation to ensure input data meets required criteria.
+### Details:
+Integrate Zod with React Hook Form to validate the dynamically generated inputs. Define validation schemas for each input type and ensure that validation errors are handled gracefully and displayed to the user.
+<info added on 2025-07-17T19:47:16.529Z>
+✅ Zod Validation Implementation Complete
+
+What I accomplished:
+- Created a dedicated `variable-validation.ts` utility file for dynamic Zod schema generation
+- Implemented comprehensive validation utilities:
+  - `createVariableSchema`: Creates a Zod schema for a single variable based on its metadata
+  - `generateVariablesSchema`: Builds a complete Zod object schema from a list of variables
+  - `generateDefaultValues`: Creates appropriate default values based on variable types
+- Added type-specific validation:
+  - String validations: min/max length, email format, URL format
+  - Number validations: min/max values
+  - Boolean validations with proper error messages
+  - Required/optional field handling
+- Enhanced the VariableForm component:
+  - Replaced inline schema generation with utility functions
+  - Added visual feedback for validation errors (red border)
+  - Improved error message display
+  - Added proper form state persistence during schema changes
+- Added smart type coercion:
+  - String-to-number conversion for number fields
+  - String-to-boolean conversion for boolean fields
+
+Technical Implementation:
+- Used Zod's flexible schema building API for dynamic validation
+- Created user-friendly error messages with variable name context
+- Implemented proper type handling and type guards
+- Ensured validation schemas update when variables change
+- Used zodResolver to connect schemas with React Hook Form
+
+Benefits:
+- Much more robust form validation with clear feedback
+- Centralized validation logic in dedicated utility
+- Type safety throughout the validation process
+- Easily extensible for additional validation types
+- Better user experience with clearer error handling
+
+Testing:
+- Form correctly validates variable inputs based on type and constraints
+- Error messages display with proper context (e.g., "name must be at least 2 characters")
+- Validation visual feedback works properly (red borders for invalid fields)
+- Type coercion works as expected (string to number conversion, etc.)
+
+✅ The Zod validation system is now fully functional and integrated with React Hook Form!
+</info added on 2025-07-17T19:47:16.529Z>
+
+## 4. Create Unit Tests for Variable Detection [done]
+### Dependencies: 3.1
+### Description: Develop unit tests to verify the accuracy of variable detection from Jinja2 templates.
+### Details:
+Write unit tests to ensure that the variable extraction function correctly identifies all variables in a variety of template scenarios. Use mock templates with known variables to validate the detection logic.
+<info added on 2025-07-17T19:48:59.813Z>
+✅ **Unit Tests for Variable Detection Complete**
+
+**What I accomplished:**
+- Created comprehensive unit tests for the Jinja2 parser in `jinja-parser.test.ts`
+- Implemented test cases for all major parser functions:
+  - `extractVariablesWithMetadata` (8 test cases)
+  - `extractSimpleVariables` (1 test case) 
+  - `combineVariables` (3 test cases)
+- Tested various Jinja2 syntax patterns:
+  - Basic variables: `{{ name }}`
+  - Typed variables: `{{ name:string }}`
+  - Required/optional flags: `{{ name:string! }}`, `{{ name:string? }}`
+  - Validation constraints: `{{ name[min=3,max=20] }}`
+  - Default values: `{{ name | default('value') }}`
+  - Complex variables with multiple attributes
+- Verified edge cases and special handling:
+  - Variable deduplication
+  - Filter handling
+  - Tags and comments filtering
+  - Variable prioritization with metadata
+
+**Technical Implementation:**
+- Used Jest testing framework with clear expectations
+- Created modular test structure with nested describe blocks
+- Tested each parser function independently
+- Added tests for combination of multiple variables across templates
+- Ensured full coverage of extraction and metadata parsing
+
+**Benefits:**
+- Ensures robust variable extraction in edge cases
+- Provides regression protection for future changes
+- Validates correct metadata extraction from complex templates
+- Documents expected behavior for all parser functions
+
+**Test Cases:**
+- Basic variable detection
+- Type hint extraction
+- Required/optional flag recognition
+- Validation constraints parsing
+- Default value extraction
+- Complex variables with multiple attributes
+- Deduplication of repeated variables
+- Filter handling
+- Ignoring tags and comments
+- Simple variable name extraction
+- Combining and deduplicating variables from multiple templates
+- Prioritizing variables with richer metadata
+
+✅ The unit tests provide comprehensive coverage for the variable detection system!
+</info added on 2025-07-17T19:48:59.813Z>
+
+## 5. Develop Integration Tests for Form Generation [done]
+### Dependencies: 3.2, 3.3
+### Description: Implement integration tests to verify the correct generation of input forms based on detected variables.
+### Details:
+Create integration tests that simulate the entire process from variable detection to form generation and validation. Ensure that the form behaves as expected with various input scenarios and that validation rules are enforced.
+<info added on 2025-07-17T19:54:41.476Z>
+✅ **Integration Tests for Form Generation Complete**
+
+**What I accomplished:**
+- Created a comprehensive test suite for the VariableForm component in `variable-form.test.tsx`
+- Implemented 7 detailed integration tests covering the entire form lifecycle:
+  - Rendering variable inputs with appropriate types
+  - Displaying type badges for each field
+  - Showing empty state when no variables provided
+  - Calling onChange/onSubmit handlers correctly
+  - Displaying validation errors for invalid inputs
+  - Switching input types based on variable metadata
+  - Form submission with validation
+
+**Technical Implementation:**
+- Used React Testing Library for component testing
+  - `render()` to mount the component
+  - `screen` queries to find DOM elements
+  - `fireEvent` to simulate user interactions
+  - `userEvent` for more realistic interaction simulation
+- Created realistic test data with sample variables
+- Tested both happy paths and error cases
+- Verified form state management with mock handlers
+- Added assertions for accessibility roles and attributes
+- Tested responsive layout behavior
+
+**Tested Features:**
+- Form rendering with different variable types
+- Type badges display
+- Empty state UI with helpful messages
+- Form value change notifications
+- Form submission handling
+- Validation error display
+- Dynamic input type switching
+  - Text fields for strings
+  - Number fields for numbers
+  - Textareas for long text
+  - Switches for boolean values
+
+**Benefits:**
+- Ensures the form works correctly with various input types
+- Provides regression protection for UI changes
+- Verifies validation error display behavior
+- Tests the complete form lifecycle from rendering to submission
+- Documents expected component behavior for future reference
+
+✅ The integration tests provide comprehensive coverage for the variable form component!
+</info added on 2025-07-17T19:54:41.476Z>
+

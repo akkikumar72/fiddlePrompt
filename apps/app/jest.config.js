@@ -1,5 +1,5 @@
 // jest.config.js
-import { createJestConfig } from "next/jest.js";
+import { createJestConfig } from "next/jest.js"
 
 const customJestConfig = {
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
@@ -8,12 +8,12 @@ const customJestConfig = {
   modulePaths: ["<rootDir>/src"],
   moduleDirectories: ["node_modules", "src"],
   moduleNameMapper: {
-    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@/(.*)$": "<rootDir>/src/$1"
   },
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }],
-  },
-};
+    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { presets: ["next/babel"] }]
+  }
+}
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(customJestConfig);
+export default createJestConfig(customJestConfig)

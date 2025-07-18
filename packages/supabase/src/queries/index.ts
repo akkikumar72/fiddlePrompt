@@ -1,29 +1,29 @@
-import { logger } from "@v1/logger";
-import { createClient } from "@v1/supabase/server";
+import { logger } from "@v1/logger"
+import { createClient } from "@v1/supabase/server"
 
 export async function getUser() {
-  const supabase = createClient();
+  const supabase = await createClient()
 
   try {
-    const result = await supabase.auth.getUser();
+    const result = await supabase.auth.getUser()
 
-    return result;
+    return result
   } catch (error) {
-    logger.error(error);
+    logger.error(error)
 
-    throw error;
+    throw error
   }
 }
 
 export async function getPosts() {
-  const supabase = createClient();
+  const supabase = await createClient()
 
   try {
-    const result = await supabase.from("posts").select("*");
+    const result = await supabase.from("posts").select("*")
 
-    return result;
+    return result
   } catch (error) {
-    logger.error(error);
-    throw error;
+    logger.error(error)
+    throw error
   }
 }

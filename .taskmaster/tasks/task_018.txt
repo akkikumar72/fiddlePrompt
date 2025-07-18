@@ -1,0 +1,11 @@
+# Task ID: 18
+# Title: Create Placeholder and Empty States
+# Status: pending
+# Dependencies: 14
+# Priority: low
+# Description: Design placeholder and empty states for better user guidance.
+# Details:
+Implement placeholder text and empty state designs using TailwindCSS and Shadcn UI. Ensure they provide clear guidance for users.
+
+# Test Strategy:
+Verify that placeholder and empty states are displayed correctly in various scenarios.

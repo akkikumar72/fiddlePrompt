@@ -1,3 +1,3 @@
-import { Dub } from "dub";
+import { Dub } from "dub"
 
-export const dub = new Dub();
+export const dub = new Dub()

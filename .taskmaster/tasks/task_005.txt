@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Implement Settings Modal
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Create a modal for configuring model settings and API keys.
+# Details:
+Develop a settings modal using Shadcn UI that allows users to configure model settings such as temperature and max length. Include a secure input for storing the OpenAI API key in localStorage.
+
+# Test Strategy:
+Test the modal for correct display and functionality, ensuring settings are saved and retrieved correctly.

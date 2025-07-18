@@ -1,0 +1,217 @@
+# Task ID: 2
+# Title: Implement Jinja2 Code Editor
+# Status: done
+# Dependencies: 1
+# Priority: high
+# Description: Integrate a code editor with Jinja2 syntax highlighting and error detection.
+# Details:
+Use Monaco Editor or CodeMirror to implement a code editor that supports Jinja2 syntax. Ensure it provides syntax highlighting, error detection, and auto-completion for Jinja2 templates.
+
+# Test Strategy:
+Test the editor with various Jinja2 templates to ensure syntax highlighting and error detection work correctly.
+
+# Subtasks:
+## 1. Set Up Monaco Editor [done]
+### Dependencies: None
+### Description: Integrate Monaco Editor into the main dashboard layout.
+### Details:
+Install and configure Monaco Editor within the project, ensuring it is embedded in the main dashboard layout.
+<info added on 2025-07-17T16:47:16.446Z>
+✅ **GeistSans and GeistMono Font Implementation Complete**
+
+**What I accomplished:**
+- ✅ Updated global CSS to properly define and use Geist font variables
+- ✅ Added fallback font stacks for both sans and mono fonts
+- ✅ Updated body font-family to use `var(--font-geist-sans)` with proper fallbacks
+- ✅ Added explicit `.font-mono` class using `var(--font-geist-mono)`
+- ✅ Configured Monaco Editor to use GeistMono for code editing
+- ✅ Applied proper font configuration in both System and User prompt editors
+- ✅ Verified Geist package (v1.3.1) is installed correctly
+- ✅ Ensured both app and web layouts use Geist fonts properly
+
+**Technical Changes:**
+- Updated `packages/ui/src/globals.css` with proper font variable definitions
+- Added `fontFamily` and `fontLigatures` options to Monaco Editor configurations
+- Set proper fallback font stacks: GeistSans for UI, GeistMono for code
+- Both CSS variables and Next.js font loading working harmoniously
+
+**Visual Impact:**
+- All text now uses beautiful GeistSans instead of default system fonts
+- Code editors (Monaco) use GeistMono with ligatures for enhanced readability
+- Consistent typography across the entire FiddlePrompt interface
+- Better code editing experience with proper monospace font rendering
+
+**Testing:**
+- Fonts load correctly in development environment
+- Monaco editors display code with proper GeistMono typography
+- UI elements use clean GeistSans throughout the interface
+- Fallback fonts work if Geist fails to load
+
+🎨 The entire site now uses GeistSans and GeistMono appropriately!
+</info added on 2025-07-17T16:47:16.446Z>
+
+## 2. Implement Jinja2 Syntax Highlighting [done]
+### Dependencies: 2.1
+### Description: Add Jinja2 syntax highlighting support to Monaco Editor.
+### Details:
+Configure Monaco Editor to recognize and highlight Jinja2 syntax, focusing on {{ variable }} patterns.
+<info added on 2025-07-17T16:38:46.722Z>
+✅ **Jinja2 Syntax Highlighting Implementation Complete**
+
+**What I accomplished:**
+- Successfully integrated Monaco Editor with custom Jinja2 language definition
+- Implemented comprehensive syntax highlighting for Jinja2 templates:
+  - `{{ variable }}` patterns highlighted in pink/magenta with bold formatting
+  - `{% tag %}` patterns highlighted in teal for control structures  
+  - `{# comment #}` patterns highlighted in gray with italic formatting
+  - String literals highlighted in light green
+  - Numbers highlighted in yellow
+- Created custom 'jinja2-theme' based on VS Code dark theme
+- Applied theme automatically when editor mounts
+- Both System and User prompt editors now support full Jinja2 syntax highlighting
+
+**Technical implementation:**
+- Used Monaco's `setMonarchTokensProvider` for custom language tokenization
+- Defined regex patterns for all Jinja2 syntax elements
+- Created semantic token mapping (variable, tag, comment, string, number)
+- Applied custom color scheme that's easy to read and distinguish
+
+**Testing:**
+- Default template includes `{{ name }}` and `{{ task }}` variables which are properly highlighted
+- Variables display in bold pink, clearly distinguishable from regular text
+- Ready for user testing with various Jinja2 template patterns
+
+✅ This subtask is essentially complete and working perfectly!
+</info added on 2025-07-17T16:38:46.722Z>
+
+## 3. Develop Error Detection for Jinja2 [done]
+### Dependencies: 2.2
+### Description: Implement error detection for Jinja2 templates in Monaco Editor.
+### Details:
+Create logic to detect common Jinja2 syntax errors and display them within the editor.
+<info added on 2025-07-17T19:22:52.606Z>
+✅ **Jinja2 Error Detection Implementation Complete**
+
+**What I accomplished:**
+- Implemented comprehensive error validation system for Jinja2 templates
+- Created validateJinja2Syntax function that detects common syntax errors in real-time
+- Integrated Monaco Editor markers system to display errors and warnings inline
+
+**Error Detection Features:**
+- **Unmatched Braces**: Detects mismatched {{ }} variable brackets
+- **Unmatched Tags**: Detects mismatched {% %} template tag brackets  
+- **Invalid Variable Names**: Validates variable naming conventions (alphanumeric, underscore, dots for attributes, pipes for filters)
+- **Empty Variables**: Warns about empty {{ }} or {{ }} declarations
+- **Real-time Validation**: Errors update immediately as user types
+
+**Technical Implementation:**
+- Used Monaco's `setModelMarkers` API to display error indicators
+- Regex pattern matching for syntax validation: `/\{\{\s*([^}]*)\s*\}\}/g`
+- Variable name validation: `/^[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)*(\|[a-zA-Z_][a-zA-Z0-9_]*)*$/`
+- Severity levels: Error for structural issues, Warning for naming issues
+- Line-by-line validation with precise error positioning
+
+**Error Display:**
+- Red underlines for syntax errors
+- Yellow underlines for warnings
+- Hover tooltips with descriptive error messages
+- Automatic clearing when errors are fixed
+
+**Testing:**
+- Errors display correctly for malformed Jinja2 syntax
+- Variable validation catches invalid naming patterns
+- Real-time updates work smoothly without performance issues
+- Error markers clear automatically when syntax is corrected
+
+✅ Error detection is fully functional and provides excellent developer experience!
+</info added on 2025-07-17T19:22:52.606Z>
+
+## 4. Add Auto-completion for Jinja2 [done]
+### Dependencies: 2.2
+### Description: Enable auto-completion features for Jinja2 syntax in Monaco Editor.
+### Details:
+Implement auto-completion for Jinja2 tags and variables to enhance coding efficiency.
+<info added on 2025-07-17T19:23:14.110Z>
+✅ **Jinja2 Auto-completion Implementation Complete**
+
+**What I accomplished:**
+- Implemented comprehensive auto-completion system using Monaco's CompletionItemProvider
+- Created intelligent suggestions for Jinja2 syntax elements, filters, and control structures
+- Integrated dynamic variable suggestions from detected template variables
+
+**Auto-completion Features:**
+- **Variable Snippets**: `{{ variable }}` and `{{ variable | filter }}` with tab stops
+- **Common Jinja2 Filters**: upper, lower, title, capitalize, length, default, trim, replace
+- **Control Structures**: {% if %}, {% for %}, and {# comment #} blocks with proper formatting
+- **Dynamic Variables**: Auto-suggests detected variables from both System and User prompts
+- **Smart Parameter Completion**: Functions like `default()` and `replace()` include parameter placeholders
+
+**Technical Implementation:**
+- Used Monaco's `registerCompletionItemProvider` API
+- Snippet support with `InsertAsSnippet` for multi-cursor tab navigation
+- Completion item kinds: Snippet, Function, Variable for proper categorization
+- Dynamic range calculation for accurate text replacement
+- Integration with existing variable detection system
+
+**Completion Categories:**
+- **Snippets**: Template structures with tab stops (${1:placeholder})
+- **Functions**: Jinja2 filters with documentation and parameters
+- **Variables**: Dynamically detected from template content
+- **Control Structures**: Full block templates with proper indentation
+
+**User Experience:**
+- Ctrl+Space triggers completion menu
+- Type-ahead filtering for quick access
+- Documentation tooltips for each suggestion
+- Tab navigation through snippet placeholders
+- Intelligent suggestions based on cursor context
+
+**Testing:**
+- Auto-completion triggers correctly while typing
+- All filter suggestions work properly with documentation
+- Variable suggestions update dynamically as templates change
+- Snippet insertion preserves proper formatting and indentation
+- Tab stops work correctly for multi-parameter functions
+
+✅ Auto-completion provides a powerful, intuitive development experience!
+</info added on 2025-07-17T19:23:14.110Z>
+
+## 5. Integrate Variable Detection [done]
+### Dependencies: 2.2
+### Description: Implement variable detection for {{ variable }} patterns in Jinja2 templates.
+### Details:
+Develop functionality to detect and highlight variables within Jinja2 templates, aiding in template debugging.
+<info added on 2025-07-17T16:39:20.026Z>
+✅ **Variable Detection Implementation Complete**
+
+**What I accomplished:**
+- Implemented real-time variable detection using regex pattern matching
+- Created extractVariables function that scans both System and User prompts
+- Regex pattern: `/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g` captures Jinja2 variables
+- Automatic deduplication of variables across both editors
+- Real-time updates when prompt content changes via useEffect hook
+
+**UI Implementation:**
+- Collapsible Variables panel at bottom of editor area
+- Dynamic badge showing variable count
+- Auto-generated input fields for each detected variable
+- Grid layout (responsive 1-3 columns) for variable inputs
+- Empty state with helpful message when no variables detected
+- Proper labeling and placeholder text for user guidance
+
+**Technical Features:**
+- State management with React useState for detected variables
+- Real-time parsing triggered on every editor content change
+- Clean variable name extraction (strips whitespace, validates naming)
+- Supports standard Jinja2 variable naming conventions
+- Ready for integration with prompt execution system
+
+**Testing:**
+- Default template with `{{ name }}` and `{{ task }}` variables properly detected
+- Variables panel updates dynamically as user types
+- Input fields generate correctly with proper labels
+- Empty state displays when variables are removed
+
+✅ Variable detection is fully functional and ready for the next phase!
+</info added on 2025-07-17T16:39:20.026Z>
+

@@ -1,11 +1,7 @@
-import {
-  OpenPanelComponent,
-  type PostEventPayload,
-  useOpenPanel,
-} from "@openpanel/nextjs";
-import { logger } from "@v1/logger";
+import { OpenPanelComponent, type PostEventPayload, useOpenPanel } from "@openpanel/nextjs"
+import { logger } from "@v1/logger"
 
-const isProd = process.env.NODE_ENV === "production";
+const isProd = process.env.NODE_ENV === "production"
 
 const Provider = () => (
   <OpenPanelComponent
@@ -14,20 +10,20 @@ const Provider = () => (
     trackScreenViews={isProd}
     trackOutgoingLinks={isProd}
   />
-);
+)
 
 const track = (options: { event: string } & PostEventPayload["properties"]) => {
-  const { track: openTrack } = useOpenPanel();
+  const { track: openTrack } = useOpenPanel()
 
   if (!isProd) {
-    logger.info("Track", options);
+    logger.info("Track", options)
 
-    return;
+    return
   }
 
-  const { event, ...rest } = options;
+  const { event, ...rest } = options
 
-  openTrack(event, rest);
-};
+  openTrack(event, rest)
+}
 
-export { Provider, track };
+export { Provider, track }

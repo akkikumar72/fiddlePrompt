@@ -1,3 +1,3 @@
 export default {
-  welcome: "Hello {name}!",
-} as const;
+  welcome: "Hello {name}!"
+} as const

@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Design Responsive UI Layout
+# Status: pending
+# Dependencies: 1
+# Priority: medium
+# Description: Ensure the application layout is responsive and accessible.
+# Details:
+Use TailwindCSS to create a responsive layout that adapts to various screen sizes. Implement keyboard navigation support for accessibility.
+
+# Test Strategy:
+Test the application on different devices and screen sizes to ensure responsive behavior. Verify keyboard navigation functionality.

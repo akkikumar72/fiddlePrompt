@@ -1,5 +1,5 @@
 {
-  "extends": "@midday/tsconfig/react-library.json",
+  "extends": "@v1/typescript/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
